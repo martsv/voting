@@ -1,0 +1,97 @@
+package ru.martsv.voting.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.martsv.voting.AuthorizedUser;
+import ru.martsv.voting.model.User;
+import ru.martsv.voting.repository.UserRepository;
+import ru.martsv.voting.to.UserTo;
+import ru.martsv.voting.util.UserUtil;
+import ru.martsv.voting.util.exception.ExceptionUtil;
+import ru.martsv.voting.util.exception.NotFoundException;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * mart
+ * 28.08.2016
+ */
+@Service("userService")
+public class UserServiceImpl implements UserService , UserDetailsService {
+
+    @Autowired
+    private UserRepository repository;
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    public User save(User user) {
+        return repository.save(UserUtil.prepareToSave(user));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    public void delete(int id) {
+        ExceptionUtil.checkNotFoundWithId(repository.delete(id), id);
+    }
+
+    @Override
+    public User get(int id) throws NotFoundException {
+        return ExceptionUtil.checkNotFoundWithId(repository.get(id), id);
+    }
+
+    @Override
+    public User getByEmail(String email) throws NotFoundException {
+        Objects.requireNonNull(email, "Email must not be empty");
+        return ExceptionUtil.checkNotFound(repository.getByEmail(email), "email=" + email);
+    }
+
+    @Cacheable("users")
+    @Override
+    public List<User> getAll() {
+        return repository.getAll();
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    public void update(User user) {
+        repository.save(UserUtil.prepareToSave(user));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Transactional
+    @Override
+    public void update(UserTo userTo) {
+        User user = get(userTo.getId());
+        UserUtil.updateFromTo(user, userTo);
+        repository.save(UserUtil.prepareToSave(user));
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    public void evictCache() {
+    }
+
+    @CacheEvict(value = "users", allEntries = true)
+    @Override
+    @Transactional
+    public void enable(int id, boolean enabled) {
+        User user = get(id);
+        user.setEnabled(enabled);
+        repository.save(user);
+    }
+
+    @Override
+    public AuthorizedUser loadUserByUsername(String email) throws UsernameNotFoundException {
+        User u = repository.getByEmail(email.toLowerCase());
+        if (u == null) {
+            throw new UsernameNotFoundException("User " + email + " is not found");
+        }
+        return new AuthorizedUser(u);
+    }
+}

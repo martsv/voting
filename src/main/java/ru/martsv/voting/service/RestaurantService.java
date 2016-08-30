@@ -3,6 +3,7 @@ package ru.martsv.voting.service;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,5 +20,9 @@ public interface RestaurantService {
     void update(Restaurant restaurant);
 
     List<Restaurant> getAll();
+
+    long getVotesOnDate(int id, LocalDate date);
+
+    List<Restaurant> getWinnersOnDate(LocalDate date);
 
 }

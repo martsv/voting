@@ -3,6 +3,7 @@ package ru.martsv.voting.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import ru.martsv.voting.service.RestaurantService;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -64,4 +66,18 @@ public class RestaurantRestController {
         return ResponseEntity.created(uriOfNewResource).body(created);
     }
 
+    @RequestMapping(value = "/{id}/votes", method = RequestMethod.GET)
+    public long getVotesOnDate(
+            @RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @PathVariable("id") int id) {
+        LOG.info("getVotes on date {} for restaurant {}", date, id);
+        return service.getVotesOnDate(id, date);
+    }
+
+    @RequestMapping(value = "/winners", method = RequestMethod.GET)
+    public List<Restaurant> getWinnersOnDate(
+            @RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+        LOG.info("getWinners on date {}", date);
+        return service.getWinnersOnDate(date);
+    }
 }

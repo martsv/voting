@@ -5,7 +5,12 @@ import org.springframework.stereotype.Repository;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.repository.RestaurantRepository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.time.LocalDate;
 import java.util.List;
+
+import static ru.martsv.voting.model.Restaurant.GET_WINNERS;
 
 /**
  * mart
@@ -13,6 +18,9 @@ import java.util.List;
  */
 @Repository
 public class DataJpaRestaurantRepositoryImpl implements RestaurantRepository {
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Autowired
     private ProxyRestaurantRepository proxy;
@@ -37,4 +45,15 @@ public class DataJpaRestaurantRepositoryImpl implements RestaurantRepository {
         return proxy.findAll();
     }
 
+    @Override
+    public long getVotesOnDate(int id, LocalDate date) {
+        return proxy.getVotesOnDate(id, date);
+    }
+
+    @Override
+    public List<Restaurant> getWinnersOnDate(LocalDate date) {
+        return em.createNamedQuery(GET_WINNERS, Restaurant.class)
+                .setParameter("date", date)
+                .getResultList();
+    }
 }

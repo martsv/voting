@@ -17,6 +17,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.martsv.voting.MenuTestData.*;
 import static ru.martsv.voting.RestaurantTestData.RESTAURANT1_ID;
+import static ru.martsv.voting.TestUtil.userHttpBasic;
+import static ru.martsv.voting.UserTestData.ADMIN;
+import static ru.martsv.voting.UserTestData.USER1;
 
 /**
  * mart
@@ -30,7 +33,8 @@ public class MenuRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGet() throws Exception {
-        mockMvc.perform(get(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID))
+        mockMvc.perform(get(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID)
+                .with(userHttpBasic(USER1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -39,22 +43,39 @@ public class MenuRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetNotFound() throws Exception {
-        mockMvc.perform(get(REST_URL + REST1_MENU1_ID, 1))
+        mockMvc.perform(get(REST_URL + REST1_MENU1_ID, 1)
+                .with(userHttpBasic(USER1)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    public void testGetUnauth() throws Exception {
+        mockMvc.perform(get(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void testDelete() throws Exception {
+        mockMvc.perform(delete(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID)
+                .with(userHttpBasic(ADMIN)))
+                .andDo(print())
+                .andExpect(status().isOk());
+        MATCHER.assertCollectionEquals(Arrays.asList(REST1_MENU2, REST1_MENU3, REST1_MENU4), service.getAll(RESTAURANT1_ID));
+    }
+
+    @Test
     public void testDeleteNotFound() throws Exception {
-        mockMvc.perform(delete(REST_URL + REST1_MENU1_ID, 1))
+        mockMvc.perform(delete(REST_URL + REST1_MENU1_ID, 1)
+                .with(userHttpBasic(ADMIN)))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void testDelete() throws Exception {
-        mockMvc.perform(delete(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID))
-                .andExpect(status().isOk());
-        MATCHER.assertCollectionEquals(Arrays.asList(REST1_MENU2, REST1_MENU3, REST1_MENU4), service.getAll(RESTAURANT1_ID));
+    public void testDeleteForbidden() throws Exception {
+        mockMvc.perform(delete(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID)
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -62,10 +83,21 @@ public class MenuRestControllerTest extends AbstractControllerTest {
         Menu updated = getUpdated();
 
         mockMvc.perform(put(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(updated)))
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk());
 
         assertEquals(updated, service.get(REST1_MENU1_ID, RESTAURANT1_ID));
+    }
+
+    @Test
+    public void testUpdateForbidden() throws Exception {
+        Menu updated = getUpdated();
+
+        mockMvc.perform(put(REST_URL + REST1_MENU1_ID, RESTAURANT1_ID).contentType(MediaType.APPLICATION_JSON)
+                .content(JsonUtil.writeValue(updated))
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -73,7 +105,8 @@ public class MenuRestControllerTest extends AbstractControllerTest {
         Menu created = getCreated();
         ResultActions action = mockMvc.perform(post(REST_URL, RESTAURANT1_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(JsonUtil.writeValue(created)));
+                .content(JsonUtil.writeValue(created))
+                .with(userHttpBasic(ADMIN)));
 
         Menu returned = MATCHER.fromJsonAction(action);
         created.setId(returned.getId());
@@ -84,7 +117,8 @@ public class MenuRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetAll() throws Exception {
-        mockMvc.perform(get(REST_URL, RESTAURANT1_ID))
+        mockMvc.perform(get(REST_URL, RESTAURANT1_ID)
+                .with(userHttpBasic(USER1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -93,7 +127,8 @@ public class MenuRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testGetOnDate() throws Exception {
-        mockMvc.perform(get(REST_URL + "ondate?date=2016-08-20", RESTAURANT1_ID))
+        mockMvc.perform(get(REST_URL + "ondate?date=2016-08-20", RESTAURANT1_ID)
+                .with(userHttpBasic(USER1)))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(MATCHER.contentListMatcher(REST1_MENU3, REST1_MENU4));
@@ -101,7 +136,8 @@ public class MenuRestControllerTest extends AbstractControllerTest {
 
     @Test
     public void testDeleteOnDate() throws Exception {
-        mockMvc.perform(delete(REST_URL + "ondate?date=2016-08-21", RESTAURANT1_ID))
+        mockMvc.perform(delete(REST_URL + "ondate?date=2016-08-21", RESTAURANT1_ID)
+                .with(userHttpBasic(ADMIN)))
                 .andExpect(status().isOk());
         MATCHER.assertCollectionEquals(Arrays.asList(REST1_MENU3, REST1_MENU4), service.getAll(RESTAURANT1_ID));
     }

@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import ru.martsv.voting.repository.JpaUtil;
+import ru.martsv.voting.service.UserService;
 
 import javax.annotation.PostConstruct;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 /**
  * mart
@@ -41,8 +44,8 @@ abstract public class AbstractControllerTest {
 
     protected MockMvc mockMvc;
 
-    //@Autowired
-    //protected UserService userService;
+    @Autowired
+    protected UserService userService;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -52,13 +55,13 @@ abstract public class AbstractControllerTest {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(webApplicationContext)
                 .addFilter(CHARACTER_ENCODING_FILTER)
-                //.apply(springSecurity())
+                .apply(springSecurity())
                 .build();
     }
 
     @Before
     public void setUp() {
-        //userService.evictCache();
+        userService.evictCache();
         jpaUtil.clear2ndLevelHibernateCache();
     }
 }

@@ -5,8 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.Arrays;
+import java.util.Collections;
 
+import static org.junit.Assert.assertEquals;
 import static ru.martsv.voting.RestaurantTestData.*;
 
 /**
@@ -58,6 +62,16 @@ public class DataJpaRestaurantServiceTest extends AbstractServiceTest {
     @Test
     public void testGetAll() throws Exception {
         MATCHER.assertCollectionEquals(RESTAURANTS, service.getAll());
+    }
+
+    @Test
+    public void testGetVotesOnDate() throws Exception {
+        assertEquals(2, service.getVotesOnDate(RESTAURANT1_ID, LocalDate.of(2016, Month.AUGUST, 21)));
+    }
+
+    @Test
+    public void testGetWinnersOnDate() throws Exception {
+        MATCHER.assertCollectionEquals(Collections.singleton(RESTAURANT1), service.getWinnersOnDate(LocalDate.of(2016, Month.AUGUST, 21)));
     }
 
 }

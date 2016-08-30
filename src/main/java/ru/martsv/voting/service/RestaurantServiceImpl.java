@@ -7,6 +7,7 @@ import ru.martsv.voting.repository.RestaurantRepository;
 import ru.martsv.voting.util.exception.ExceptionUtil;
 import ru.martsv.voting.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -44,4 +45,13 @@ public class RestaurantServiceImpl implements RestaurantService {
         repository.save(restaurant);
     }
 
+    @Override
+    public long getVotesOnDate(int id, LocalDate date) {
+        return repository.getVotesOnDate(id, date);
+    }
+
+    @Override
+    public List<Restaurant> getWinnersOnDate(LocalDate date) {
+        return repository.getWinnersOnDate(date);
+    }
 }

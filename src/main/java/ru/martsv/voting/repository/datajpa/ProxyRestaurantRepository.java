@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 import ru.martsv.voting.model.Restaurant;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -31,5 +32,8 @@ public interface ProxyRestaurantRepository extends JpaRepository<Restaurant, Int
     @Override
     @Query("SELECT r FROM Restaurant r ORDER BY r.name")
     List<Restaurant> findAll();
+
+    @Query("SELECT COUNT(v.id) FROM Vote v WHERE v.restaurant.id=:id AND v.date=:date")
+    long getVotesOnDate(@Param("id") int id, @Param("date") LocalDate date);
 
 }

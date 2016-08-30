@@ -2,6 +2,7 @@ package ru.martsv.voting.repository;
 
 import ru.martsv.voting.model.Restaurant;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,4 +20,8 @@ public interface RestaurantRepository {
     Restaurant get(int id);
 
     List<Restaurant> getAll();
+
+    long getVotesOnDate(int id, LocalDate date);
+
+    List<Restaurant> getWinnersOnDate(LocalDate date);
 }

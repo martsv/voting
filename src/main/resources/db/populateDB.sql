@@ -6,13 +6,13 @@ ALTER SEQUENCE global_seq RESTART WITH 100000;
 
 -- user
 INSERT INTO users (name, email, password, role) VALUES
-  ('Bill', 'bill@microsoft.ru', 'password', 'ROLE_USER'), -- 100000
-  ('Larry', 'larry@oracle.com', 'password', 'ROLE_USER'), -- 100001
-  ('Jeff', 'jeff@amazon.com', 'password', 'ROLE_USER'); -- 100002
+  ('Bill', 'bill@microsoft.com', '$2a$10$Sh0ZD2NFrzRRJJEKEWn8l.92ROEuzlVyzB9SV1AM8fdluPR0aC1ni', 'ROLE_USER'), -- 100000
+  ('Jeff', 'jeff@amazon.com', '$2a$10$Sh0ZD2NFrzRRJJEKEWn8l.92ROEuzlVyzB9SV1AM8fdluPR0aC1ni', 'ROLE_USER'), -- 100001
+  ('Larry', 'larry@oracle.com', '$2a$10$Sh0ZD2NFrzRRJJEKEWn8l.92ROEuzlVyzB9SV1AM8fdluPR0aC1ni', 'ROLE_USER'); -- 100002
 
 -- admin
 INSERT INTO users (name, email, password, role)
-VALUES ('Admin', 'admin@gmail.com', 'admin', 'ROLE_ADMIN');    -- 100003
+VALUES ('Admin', 'admin@gmail.com', '$2a$10$WejOLxVuXRpOgr4IlzQJ.eT4UcukNqHlAiOVZj1P/nmc8WbpMkiju', 'ROLE_ADMIN');    -- 100003
 
 INSERT INTO restaurants (name, description, address) VALUES
   ('Эль Гаучо', 'Стейк-хаус, Морепродукты, Аргентинская, Южноамериканская', 'Большой Козловский переулок, д.3, корп. 2, Москва 107078, Россия'), -- 100004
