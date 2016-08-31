@@ -52,8 +52,10 @@ JSON API using Hibernate/Spring/SpringMVC
   * DELETE /rest/restaurants/{restaurant_id}/menu/{menu_id}
 - Изменение блюда из меню заданного ресторана (ROLE_ADMIN)
   * PUT /rest/restaurants/{restaurant_id}/menu/{menu_id}
+  * в теле запроса json с информацией о блюде
 - Добавление блюда в меню заданного ресторана (ROLE_ADMIN)
   * POST /rest/restaurants/{restaurant_id}/menu
+  * в теле запроса json с информацией о блюде
 
 ## Тестирование с помощью curl
 
