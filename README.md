@@ -1,4 +1,4 @@
-Voting System
+#Voting System
 =============
 
 Voting system for deciding where to have a lunch
@@ -14,3 +14,20 @@ JSON API using Hibernate/Spring/SpringMVC
 - If it is before 11:00 we asume that he changed his mind.
 - If it is after 11:00 then it is too late, vote can't be changed
 - Each restaurant provides new menu each day.
+
+## Описание REST-интерфейса
+
+- Список ресторанов
+-- GET /rest/restaurants
+- Информация по заданному ресторану
+-- GET /rest/restaurants/{id}
+- Удаление ресторана (ROLE_ADMIN)
+-- DELETE /rest/restaurants/{id}
+
+
+## Тестирование с помощью curl
+
+- Список ресторанов
+-- curl -u bill@microsoft.com:password http://localhost:8080/voting/rest/restaurants
+- Меню ресторана
+-- curl -u bill@microsoft.com:password http://localhost:8080/voting/rest/restaurants/100005/menu
