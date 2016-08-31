@@ -3,9 +3,12 @@ package ru.martsv.voting.service;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import ru.martsv.voting.model.Restaurant;
+import ru.martsv.voting.util.TimeMachine;
+import ru.martsv.voting.util.exception.NotAcceptableException;
 import ru.martsv.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
@@ -74,4 +77,21 @@ public class DataJpaRestaurantServiceTest extends AbstractServiceTest {
         MATCHER.assertCollectionEquals(Collections.singleton(RESTAURANT1), service.getWinnersOnDate(LocalDate.of(2016, Month.AUGUST, 21)));
     }
 
+    @Test
+    public void testGetWinnersOnDateTooEarly() throws Exception {
+        thrown.expect(NotAcceptableException.class);
+
+        LocalDateTime morning = LocalDateTime.now().withHour(9);
+        TimeMachine.useFixedClockAt(morning);
+        service.getWinnersOnDate(morning.toLocalDate());
+    }
+
+    @Test
+    public void testVoteTooLate() throws Exception {
+        thrown.expect(NotAcceptableException.class);
+
+        LocalDateTime evening = LocalDateTime.now().withHour(19);
+        TimeMachine.useFixedClockAt(evening);
+        service.addVote(RESTAURANT1_ID);
+    }
 }

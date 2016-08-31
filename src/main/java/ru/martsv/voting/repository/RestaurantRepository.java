@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface RestaurantRepository {
 
-    Restaurant save(Restaurant user);
+    Restaurant save(Restaurant restaurant);
 
     // false if not found
     boolean delete(int id);
@@ -24,4 +24,6 @@ public interface RestaurantRepository {
     long getVotesOnDate(int id, LocalDate date);
 
     List<Restaurant> getWinnersOnDate(LocalDate date);
+
+    void addVote(int id);
 }

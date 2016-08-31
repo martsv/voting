@@ -28,23 +28,23 @@ public class DataJpaMenuRepositoryImpl implements MenuRepository {
 
     @Override
     @Transactional
-    public Menu update(Menu Menu, int restaurantId) {
-        if (get(Menu.getId(), restaurantId) == null) {
+    public Menu update(Menu menu, int restaurantId) {
+        if (get(menu.getId(), restaurantId) == null) {
             return null;
         }
-        Menu.setRestaurant(restaurantProxy.getOne(restaurantId));
-        return proxy.save(Menu);
+        menu.setRestaurant(restaurantProxy.getOne(restaurantId));
+        return proxy.save(menu);
     }
 
     @Override
     @Transactional
-    public Menu create(Menu Menu, int restaurantId) {
+    public Menu create(Menu menu, int restaurantId) {
         Restaurant restaurant = restaurantRepository.get(restaurantId);
         if (restaurant == null) {
             return null;
         }
-        Menu.setRestaurant(restaurant);
-        return proxy.save(Menu);
+        menu.setRestaurant(restaurant);
+        return proxy.save(menu);
     }
 
     @Override

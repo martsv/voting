@@ -28,7 +28,7 @@ public interface ProxyMenuRepository extends JpaRepository<Menu, Integer> {
     int deleteOnDate(@Param("date") LocalDate date, @Param("restaurantId") int restaurantId);
 
     @Override
-    Menu save(Menu item);
+    Menu save(Menu menu);
 
     @Query("SELECT m FROM Menu m WHERE m.id=:id AND m.restaurant.id=:restaurantId")
     Menu get(@Param("id") int id, @Param("restaurantId") int restaurantId);

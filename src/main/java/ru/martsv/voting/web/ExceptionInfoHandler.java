@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import ru.martsv.voting.util.exception.ErrorInfo;
+import ru.martsv.voting.util.exception.NotAcceptableException;
 import ru.martsv.voting.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +55,14 @@ public class ExceptionInfoHandler {
     @Order(Ordered.HIGHEST_PRECEDENCE + 2)
     public ErrorInfo restValidationError(HttpServletRequest req, MethodArgumentNotValidException e) {
         return logAndGetValidationErrorInfo(req, e.getBindingResult());
+    }
+
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    @ExceptionHandler(NotAcceptableException.class)
+    @ResponseBody
+    @Order(Ordered.HIGHEST_PRECEDENCE + 3)
+    public ErrorInfo handleNotAcceptable(HttpServletRequest req, NotAcceptableException e) {
+        return logAndGetErrorInfo(req, e, false);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.repository.RestaurantRepository;
+import ru.martsv.voting.util.TimeMachine;
 import ru.martsv.voting.util.exception.ExceptionUtil;
+import ru.martsv.voting.util.exception.NotAcceptableException;
 import ru.martsv.voting.util.exception.NotFoundException;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -52,6 +56,21 @@ public class RestaurantServiceImpl implements RestaurantService {
 
     @Override
     public List<Restaurant> getWinnersOnDate(LocalDate date) {
-        return repository.getWinnersOnDate(date);
+        LocalDateTime now = TimeMachine.now();
+        if (date.compareTo(now.toLocalDate()) == 0 && now.toLocalTime().compareTo(LocalTime.of(11, 0)) < 0) {
+            throw new NotAcceptableException("Winning restaurants are not known yet");
+        } else {
+            return repository.getWinnersOnDate(date);
+        }
+    }
+
+    @Override
+    public void addVote(int id) throws NotAcceptableException {
+        LocalDateTime now = TimeMachine.now();
+        if (now.toLocalTime().compareTo(LocalTime.of(11, 0)) < 0) {
+            repository.addVote(id);
+        } else {
+            throw new NotAcceptableException("Time for voting today is over");
+        }
     }
 }

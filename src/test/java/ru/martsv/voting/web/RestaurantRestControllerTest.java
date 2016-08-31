@@ -7,8 +7,11 @@ import org.springframework.test.web.servlet.ResultActions;
 import ru.martsv.voting.TestUtil;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.service.RestaurantService;
+import ru.martsv.voting.util.TimeMachine;
 import ru.martsv.voting.web.json.JsonUtil;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
@@ -143,6 +146,53 @@ public class RestaurantRestControllerTest extends AbstractControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MATCHER.contentListMatcher(RESTAURANT2)));
+    }
+
+    @Test
+    public void testGetWinnersOnDateTooEarly() throws Exception {
+        LocalDateTime morning = LocalDateTime.now().withHour(9);
+
+        TimeMachine.useFixedClockAt(morning);
+        mockMvc.perform(get(REST_URL + "/winners?date=" + morning.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    public void testGetWinnersOnDateInTime() throws Exception {
+        LocalDateTime morning = LocalDateTime.now().withHour(9);
+        LocalDateTime evening = LocalDateTime.now().withHour(19);
+
+        TimeMachine.useFixedClockAt(morning);
+        mockMvc.perform(post(REST_URL + RESTAURANT1_ID + "/vote")
+                .with(userHttpBasic(USER1)));
+
+        TimeMachine.useFixedClockAt(evening);
+        mockMvc.perform(get(REST_URL + "/winners?date=" + evening.toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MATCHER.contentListMatcher(RESTAURANT1));
+    }
+
+    @Test
+    public void testAddVoteInTime() throws Exception {
+        LocalDateTime morning = LocalDateTime.now().withHour(9);
+
+        TimeMachine.useFixedClockAt(morning);
+        mockMvc.perform(post(REST_URL + RESTAURANT1_ID + "/vote")
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testAddVoteToLate() throws Exception {
+        LocalDateTime evening = LocalDateTime.now().withHour(19);
+
+        TimeMachine.useFixedClockAt(evening);
+        mockMvc.perform(post(REST_URL + RESTAURANT1_ID + "/vote")
+                .with(userHttpBasic(USER1)))
+                .andExpect(status().isNotAcceptable());
     }
 
 }

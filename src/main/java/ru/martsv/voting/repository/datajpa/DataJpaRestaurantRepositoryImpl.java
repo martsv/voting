@@ -2,6 +2,8 @@ package ru.martsv.voting.repository.datajpa;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import ru.martsv.voting.AuthorizedUser;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.repository.RestaurantRepository;
 
@@ -10,6 +12,7 @@ import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.List;
 
+import static ru.martsv.voting.model.Restaurant.ADD_VOTE;
 import static ru.martsv.voting.model.Restaurant.GET_WINNERS;
 
 /**
@@ -55,5 +58,15 @@ public class DataJpaRestaurantRepositoryImpl implements RestaurantRepository {
         return em.createNamedQuery(GET_WINNERS, Restaurant.class)
                 .setParameter("date", date)
                 .getResultList();
+    }
+
+    @Override
+    @Transactional
+    public void addVote(int id) {
+        em.createNamedQuery(ADD_VOTE)
+                .setParameter("userId", AuthorizedUser.id())
+                .setParameter("restaurantId", id)
+                .setParameter("date", LocalDate.now())
+                .executeUpdate();
     }
 }

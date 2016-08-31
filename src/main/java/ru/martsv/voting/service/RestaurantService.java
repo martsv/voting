@@ -25,4 +25,5 @@ public interface RestaurantService {
 
     List<Restaurant> getWinnersOnDate(LocalDate date);
 
+    void addVote(int id);
 }

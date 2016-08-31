@@ -11,10 +11,10 @@ import java.util.List;
  */
 public interface MenuRepository {
     // null if updated menu do not belong to restaurantId
-    Menu update(Menu Menu, int restaurantId);
+    Menu update(Menu menu, int restaurantId);
 
     // null if restaurantId not found
-    Menu create(Menu Menu, int restaurantId);
+    Menu create(Menu menu, int restaurantId);
 
     // false if menu do not belong to restaurantId
     boolean delete(int id, int restaurantId);

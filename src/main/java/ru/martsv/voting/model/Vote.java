@@ -29,13 +29,6 @@ public class Vote extends BaseEntity {
 
     public Vote() {}
 
-    public Vote(Integer id, LocalDate date, User user, Restaurant restaurant) {
-        super(id);
-        this.date = date;
-        this.user = user;
-        this.restaurant = restaurant;
-    }
-
     public LocalDate getDate() {
         return date;
     }
@@ -59,4 +52,5 @@ public class Vote extends BaseEntity {
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
     }
+
 }

@@ -12,32 +12,41 @@ import javax.validation.constraints.Size;
  * mart
  * 20.08.2016
  */
-@NamedNativeQuery(
-        name = Restaurant.GET_WINNERS,
-        query = "SELECT r.id as id" +
-                "      ,r.name as name" +
-                "      ,r.description as description" +
-                "      ,r.address as address" +
-                "  FROM restaurants r" +
-                " WHERE r.id IN (SELECT v.restaurant_id" +
-                "                  FROM votes v" +
-                "                 WHERE v.date=:date" +
-                "                 GROUP BY v.restaurant_id" +
-                "                HAVING COUNT(v.id) = (SELECT COUNT(v.id)" +
-                "                                        FROM votes v" +
-                "                                       WHERE v.date=:date" +
-                "                                       GROUP by v.restaurant_id" +
-                "                                       ORDER BY 1 DESC" +
-                "                                       LIMIT 1))" +
-                " ORDER BY r.name",
-        resultClass = Restaurant.class
-)
+@NamedNativeQueries({
+        @NamedNativeQuery(
+                name = Restaurant.GET_WINNERS,
+                query = "SELECT r.id AS id" +
+                        "      ,r.name AS name" +
+                        "      ,r.description AS description" +
+                        "      ,r.address AS address" +
+                        "  FROM restaurants r" +
+                        " WHERE r.id IN (SELECT v.restaurant_id" +
+                        "                  FROM votes v" +
+                        "                 WHERE v.date=:date" +
+                        "                 GROUP BY v.restaurant_id" +
+                        "                HAVING COUNT(v.id) = (SELECT COUNT(v.id)" +
+                        "                                        FROM votes v" +
+                        "                                       WHERE v.date=:date" +
+                        "                                       GROUP BY v.restaurant_id" +
+                        "                                       ORDER BY 1 DESC" +
+                        "                                       LIMIT 1))" +
+                        " ORDER BY r.name",
+                resultClass = Restaurant.class
+        ),
+        @NamedNativeQuery(
+                name = Restaurant.ADD_VOTE,
+                query = "DELETE FROM votes WHERE user_id=:userId AND date=:date ;" +
+                        "INSERT INTO votes (user_id, restaurant_id, date)" +
+                        "VALUES (:userId, :restaurantId, :date);"
+        )
+})
 
 @Entity
 @Table(name = "restaurants", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "address"}, name = "restaurants_unique_name_address_idx")})
 public class Restaurant extends NamedEntity {
 
     public static final String GET_WINNERS = "Restaurant.getWinners";
+    public static final String ADD_VOTE = "Restaurant.adVote";
 
     @Column(name = "description", nullable = false)
     @Size(max = 50)

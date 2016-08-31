@@ -4,12 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.martsv.voting.model.Restaurant;
 import ru.martsv.voting.service.RestaurantService;
+import ru.martsv.voting.util.exception.NotAcceptableException;
 
 import javax.validation.Valid;
 import java.net.URI;
@@ -79,5 +82,11 @@ public class RestaurantRestController {
             @RequestParam(value = "date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         LOG.info("getWinners on date {}", date);
         return service.getWinnersOnDate(date);
+    }
+
+    @RequestMapping(value = "/{id}/vote", method = RequestMethod.POST)
+    public void addVote(@PathVariable("id") int id) {
+        LOG.info("addVote for restaurant {}", id);
+        service.addVote(id);
     }
 }
