@@ -17,13 +17,43 @@ JSON API using Hibernate/Spring/SpringMVC
 
 ## Описание REST-интерфейса
 
+### Рестораны
+
 - Список ресторанов
   * GET /rest/restaurants
 - Информация по заданному ресторану
-  * GET /rest/restaurants/{id}
+  * GET /rest/restaurants/{restaurant_id}
 - Удаление ресторана (ROLE_ADMIN)
-  * DELETE /rest/restaurants/{id}
+  * DELETE /rest/restaurants/{restaurant_id}
+- Изменение информации о ресторане (ROLE_ADMIN)
+  * PUT /rest/restaurants/{restaurant_id}
+  * в теле запроса json с информацией о ресторане
+- Добавление ресторана (ROLE_ADMIN)
+  * POST /rest/restaurants
+  * в теле запроса json с информацией о ресторане
+- Количество голосов по заданному ресторану
+  * GET /rest/restaurants/{restaurant_id}/votes
+- Список победителей
+  * GET /rest/restaurants/winners?date=<дата>
+- Голосование за ресторан
+  * POST /rest/restaurants/{restaurant_id}/vote
 
+### Меню ресторанов
+
+- Меню заданного ресторана на все даты
+  * GET /rest/restaurants/{restaurant_id}/menu
+- Меню заданного ресторана на заданную дату
+  * GET /rest/restaurants/{restaurant_id}/menu/ondate?date=<дата>
+- Удаление меню заданного ресторана на заданную дату (ROLE_ADMIN)
+  * DELETE /rest/restaurants/{restaurant_id}/menu/ondate?date=<дата>
+- Блюдо из меню заданного ресторана
+  * GET /rest/restaurants/{restaurant_id}/menu/{menu_id}
+- Удаление блюда из меню заданного ресторана (ROLE_ADMIN)
+  * DELETE /rest/restaurants/{restaurant_id}/menu/{menu_id}
+- Изменение блюда из меню заданного ресторана (ROLE_ADMIN)
+  * PUT /rest/restaurants/{restaurant_id}/menu/{menu_id}
+- Добавление блюда в меню заданного ресторана (ROLE_ADMIN)
+  * POST /rest/restaurants/{restaurant_id}/menu
 
 ## Тестирование с помощью curl
 
